@@ -28,8 +28,8 @@ $(document).ready(function() {
 	})();
 	
 	var c = document.getElementById('screen');
-	screen.canvas = canvas.getContext('2d');
-	screen.image = c.createImageData(config.width, config.height);
+	screen.canvas = c.getContext('2d');
+	screen.image = screen.canvas.createImageData(config.width, config.height);
 	
 	loop();
 });
@@ -44,9 +44,9 @@ function loop(){
 function render() {
 	
 	
-	setPixel(screen.image, 0, 0, 256, 256, 256, 256);
+	setPixel(screen.image, randBetween(0, config.width), randBetween(0, config.height), 256, 256, 256, 256);
 	
-	c.putImageData(i, 0, 0); // at coords 0,0
+	screen.canvas.putImageData(screen.image, 0, 0); // at coords 0,0
 }
 
 
@@ -58,6 +58,10 @@ function setPixel(imageData, x, y, r, g, b, a) {
 	imageData.data[index+3] = a;
 }
 
+
+function randBetween(from, to) {
+	return Math.floor(Math.random() * (to - from + 1) + from);
+}
 
 
 

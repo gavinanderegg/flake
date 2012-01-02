@@ -32,11 +32,11 @@ $(document).ready(function() {
 	})();
 	
 	$(document).keydown(function(event) {
-		console.log("which: " + event.which);
-		console.log("keyPress: " + event.keyPress);
+		var ESC = 27;
 		
-		if ((event.which == 27) || (event.keyPress == 27)) {
+		if ((event.which == ESC) || (event.keyPress == ESC)) {
 			animate = false;
+			console.log("animation stopped");
 		}
 	});
 	
@@ -44,17 +44,16 @@ $(document).ready(function() {
 	screen.canvas = c.getContext('2d');
 	screen.image = screen.canvas.createImageData(config.width, config.height);
 	
+	console.log("animation starting");
+	
 	loop();
 });
 
 
 function render() {
-	var pX = Math.floor(randBetween(0, (config.width - 1)) / 2);
-	var pY = Math.floor(randBetween(0, (config.height - 1)) / 2);
 	
-	setPixel(screen.image, pX, pY, 256, 256, 256, 256);
 	
-	screen.canvas.putImageData(screen.image, 0, 0); // at coords 0,0
+	screen.canvas.putImageData(screen.image, 0, 0);
 }
 
 
@@ -67,33 +66,33 @@ function loop() {
 
 
 function setPixel(imageData, x, y, r, g, b, a) {
-	index = ((x * 2) + (y * 2) * imageData.width) * 4;
+	index = ((x * 2) + ((y * 2) * imageData.width)) * 4;
 	
 	// First pixel
-	imageData.data[index+0] = r;
-	imageData.data[index+1] = g;
-	imageData.data[index+2] = b;
-	imageData.data[index+3] = a;
+	imageData.data[index + 0] = r;
+	imageData.data[index + 1] = g;
+	imageData.data[index + 2] = b;
+	imageData.data[index + 3] = a;
 	
 	// The one beside it
-	imageData.data[index+4] = r;
-	imageData.data[index+5] = g;
-	imageData.data[index+6] = b;
-	imageData.data[index+7] = a;
+	imageData.data[index + 4] = r;
+	imageData.data[index + 5] = g;
+	imageData.data[index + 6] = b;
+	imageData.data[index + 7] = a;
 	
 	index = ((x * 2) + ((y * 2) + 1) * imageData.width) * 4;
 	
 	// The pixel below the first
-	imageData.data[index+0] = r;
-	imageData.data[index+1] = g;
-	imageData.data[index+2] = b;
-	imageData.data[index+3] = a;
+	imageData.data[index + 0] = r;
+	imageData.data[index + 1] = g;
+	imageData.data[index + 2] = b;
+	imageData.data[index + 3] = a;
 	
 	// The pixel beside it
-	imageData.data[index+4] = r;
-	imageData.data[index+5] = g;
-	imageData.data[index+6] = b;
-	imageData.data[index+7] = a;
+	imageData.data[index + 4] = r;
+	imageData.data[index + 5] = g;
+	imageData.data[index + 6] = b;
+	imageData.data[index + 7] = a;
 }
 
 
@@ -101,6 +100,12 @@ function randBetween(from, to) {
 	return Math.floor(Math.random() * (to - from + 1) + from);
 }
 
+function randomPixel() {
+	var pX = Math.floor(randBetween(0, (config.width - 1)) / 2);
+	var pY = Math.floor(randBetween(0, (config.height - 1)) / 2);
+	
+	setPixel(screen.image, pX, pY, 256, 256, 256, 256);
+}
 
 function flake(x, y, weight) {
 	

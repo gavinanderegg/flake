@@ -2,8 +2,8 @@
 
 
 var config = {
-	'width': 320, // The virtual size. These vaules
-	'height': 240, // are doubled when drawn
+	'width': 640,
+	'height': 480,
 	'fps': 30
 };
 
@@ -49,7 +49,10 @@ $(document).ready(function() {
 
 
 function render() {
-	setPixel(screen.image, randBetween(0, Math.floor(config.width / 2)), randBetween(0, Math.floor(config.height / 2)), 256, 256, 256, 256);
+	var pX = Math.floor(randBetween(0, (config.width - 1)) / 2);
+	var pY = Math.floor(randBetween(0, (config.height - 1)) / 2);
+	
+	setPixel(screen.image, pX, pY, 256, 256, 256, 256);
 	
 	screen.canvas.putImageData(screen.image, 0, 0); // at coords 0,0
 }

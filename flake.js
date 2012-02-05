@@ -34,14 +34,17 @@ $(document).ready(function() {
 	$(document).keydown(function(event) {
 		var ESC = 27;
 		
-		if ((event.which == ESC) || (event.keyPress == ESC)) {
+		if ((event.which === ESC) || (event.keyPress === ESC)) {
 			animate = false;
 			console.log("animation stopped");
 		}
 	});
 	
+	flakes.push(newFlake());
+	
 	var c = document.getElementById('screen');
 	screen.canvas = c.getContext('2d');
+	// screen.canvas.globalCompositeOperation = 'lighter';
 	screen.image = screen.canvas.createImageData(config.width, config.height);
 	
 	console.log("animation starting");
@@ -51,14 +54,18 @@ $(document).ready(function() {
 
 
 function render() {
+	screen.image = screen.canvas.createImageData(config.width, config.height);
 	
+	// setPixel(screen.image, randBetween(0, Math.floor(config.width / 2)), randBetween(0, Math.floor(config.height / 2)), 256, 256, 256, 256);
+	
+	animateFlakes();
 	
 	screen.canvas.putImageData(screen.image, 0, 0);
 }
 
 
 function loop() {
-	if (animate == true) {
+	if (animate === true) {
 		requestAnimFrame(loop);
 		render();
 	}
@@ -66,7 +73,7 @@ function loop() {
 
 
 function setPixel(imageData, x, y, r, g, b, a) {
-	index = ((x * 2) + ((y * 2) * imageData.width)) * 4;
+	var index = ((x * 2) + ((y * 2) * imageData.width)) * 4;
 	
 	// First pixel
 	imageData.data[index + 0] = r;
@@ -107,12 +114,46 @@ function randomPixel() {
 	setPixel(screen.image, pX, pY, 256, 256, 256, 256);
 }
 
-function flake(x, y, weight) {
+
+function newFlake() {
+	var x = Math.floor(randBetween(0, (config.width - 1)) / 2);
+	var weight = Math.floor(randBetween(0.1, 1));
+	var motion = Math.floor(randBetween(-1, 1));
 	
+	var flake = {
+		'x': x,
+		'y': -1,
+		'weight': weight,
+		'motion': motion,
+		'previous': 0
+	};
+	
+	return flake;
 }
 
 
-
+function animateFlakes() {
+	if ((Math.floor(randBetween(0, 1)) > 0.9) && flakes.length < 80) {
+		flakes.push(newFlake());
+	}
+	
+	$.each(flakes, function(index, flake) {
+		console.log(flake.y);
+		
+		flake.y += flake.weight;
+		flake.x += flake.motion;
+		
+		if (flake.y > config.height) {
+			
+		}
+		
+		setPixel(screen.image, flake.x, flake.y, 256, 256, 256, 256);
+	});
+	
+	// console.log(flake.x + " " +  flake.y);
+	
+	screen.canvas.putImageData(screen.image, 0, 0);
+}
 
 
 

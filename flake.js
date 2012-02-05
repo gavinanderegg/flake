@@ -52,6 +52,12 @@ $(document).ready(function() {
 	loop();
 });
 
+// Array Remove - By John Resig (MIT Licensed)
+Array.prototype.remove = function(from, to) {
+	var rest = this.slice((to || from) + 1 || this.length);
+	this.length = from < 0 ? this.length + from : from;
+	return this.push.apply(this, rest);
+};
 
 function render() {
 	screen.image = screen.canvas.createImageData(config.width, config.height);
@@ -115,14 +121,22 @@ function randomPixel() {
 }
 
 
+function flakeInfo(flake) {
+	var string = "x: " + flake.x + "\n";
+	string += "y: " + flake.y + "\n";
+	
+	return string;
+}
+
+
 function newFlake() {
 	var x = Math.floor(randBetween(0, (config.width - 1)) / 2);
-	var weight = Math.floor(randBetween(0.1, 1));
-	var motion = Math.floor(randBetween(-1, 1));
+	var weight = Math.random();
+	var motion = -1 + (2 * Math.random());
 	
 	var flake = {
 		'x': x,
-		'y': -1,
+		'y': 0,
 		'weight': weight,
 		'motion': motion,
 		'previous': 0
@@ -133,26 +147,34 @@ function newFlake() {
 
 
 function animateFlakes() {
-	if ((Math.floor(randBetween(0, 1)) > 0.9) && flakes.length < 80) {
+	if ((Math.floor(randBetween(0, 1)) > 0.9) && flakes.length < 24) {
 		flakes.push(newFlake());
 	}
 	
-	$.each(flakes, function(index, flake) {
-		console.log(flake.y);
+	for (var f = 0; f < flakes.length; f++) {
+		var flake = flakes[f];
 		
 		flake.y += flake.weight;
 		flake.x += flake.motion;
 		
-		if (flake.y > config.height) {
-			
+		if (flake.y >= (config.height / 2)) {
+			flakes.remove(f);
+			delete flake;
 		}
-		
-		setPixel(screen.image, flake.x, flake.y, 256, 256, 256, 256);
-	});
+		else if (flake.x >= (config.width / 2)) {
+			flakes.remove(f);
+			delete flake;
+		}
+		else if (flake.x <= 0) {
+			flakes.remove(f);
+			delete flake;
+		}
+		else {
+			setPixel(screen.image, Math.floor(flake.x), Math.floor(flake.y), 256, 256, 256, 256);
+		}
+	}
 	
 	// console.log(flake.x + " " +  flake.y);
-	
-	screen.canvas.putImageData(screen.image, 0, 0);
 }
 
 

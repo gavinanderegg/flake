@@ -60,7 +60,9 @@ Array.prototype.remove = function(from, to) {
 };
 
 function render() {
-	screen.image = screen.canvas.createImageData(config.width, config.height);
+	for (var i = 0; i < screen.image.data.length; i++) {
+		screen.image.data[i] = 0;
+	}
 	
 	// setPixel(screen.image, randBetween(0, Math.floor(config.width / 2)), randBetween(0, Math.floor(config.height / 2)), 256, 256, 256, 256);
 	

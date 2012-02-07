@@ -15,7 +15,9 @@ var screen = {
 
 
 var flakes = [];
+var bottom = {};
 var animate = true;
+var screenHeight = Math.floor((config.height / 2));
 
 
 $(document).ready(function() {
@@ -67,6 +69,7 @@ function render() {
 	// setPixel(screen.image, randBetween(0, Math.floor(config.width / 2)), randBetween(0, Math.floor(config.height / 2)), 256, 256, 256, 256);
 	
 	animateFlakes();
+	drawBottom();
 	
 	screen.canvas.putImageData(screen.image, 0, 0);
 }
@@ -159,7 +162,15 @@ function animateFlakes() {
 		flake.y += flake.weight;
 		flake.x += flake.motion;
 		
-		if (flake.y >= (config.height / 2)) {
+		if (flake.y >= screenHeight || hitBottom(Math.floor(flake.x), Math.floor(flake.y))) {
+			var bottomLevel = bottom[Math.floor(flake.x)];
+			
+			if (bottomLevel) {
+				bottom[Math.floor(flake.x)] += 1;
+			} else {
+				bottom[Math.floor(flake.x)] = 1;
+			}
+			
 			flakes.remove(f);
 			delete flake;
 		}
@@ -180,4 +191,28 @@ function animateFlakes() {
 }
 
 
+function hitBottom(x, y) {
+	if (bottom[x]) {
+		
+		
+		if (y >= Math.floor((screenHeight - 1) - bottom[x])) {
+			return true;
+		}
+	} else {
+		return false;
+	}
+	
+	return false;
+}
+
+
+function drawBottom() {
+	$.each(bottom, function(row, height) {
+		var fromBottom = Math.floor(screenHeight - height);
+		
+		for (var up = 0; up < (screenHeight - fromBottom); up++) {
+			setPixel(screen.image, row, ((screenHeight - 1) - up), 256, 256, 256, 256);
+		}
+	});
+}
 

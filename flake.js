@@ -1,4 +1,5 @@
-// Christmas Lemmings 1991?
+// A small canvas demo by Gavin Anderegg.
+// Inspired by Christmas Lemmings
 
 
 var config = {
@@ -54,12 +55,14 @@ $(document).ready(function() {
 	loop();
 });
 
+
 // Array Remove - By John Resig (MIT Licensed)
 Array.prototype.remove = function(from, to) {
 	var rest = this.slice((to || from) + 1 || this.length);
 	this.length = from < 0 ? this.length + from : from;
 	return this.push.apply(this, rest);
 };
+
 
 function render() {
 	for (var i = 0; i < screen.image.data.length; i++) {
@@ -186,20 +189,14 @@ function animateFlakes() {
 			setPixel(screen.image, Math.floor(flake.x), Math.floor(flake.y), 256, 256, 256, 256);
 		}
 	}
-	
-	// console.log(flake.x + " " +  flake.y);
 }
 
 
 function hitBottom(x, y) {
 	if (bottom[x]) {
-		
-		
 		if (y >= Math.floor((screenHeight - 1) - bottom[x])) {
 			return true;
 		}
-	} else {
-		return false;
 	}
 	
 	return false;

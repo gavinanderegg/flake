@@ -155,7 +155,7 @@ function newFlake() {
 
 
 function animateFlakes() {
-	if ((Math.floor(randBetween(0, 1)) > 0.9) && flakes.length < 24) {
+	if ((Math.floor(randBetween(0, 1)) > 0.9) && flakes.length < 82) {
 		flakes.push(newFlake());
 	}
 	

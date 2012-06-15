@@ -18,6 +18,7 @@ var screen = {
 var flakes = [];
 var bottom = {};
 var animate = true;
+var screenWidth = Math.floor((config.width / 2));
 var screenHeight = Math.floor((config.height / 2));
 
 
@@ -49,6 +50,20 @@ $(document).ready(function() {
 	screen.canvas = c.getContext('2d');
 	// screen.canvas.globalCompositeOperation = 'lighter';
 	screen.image = screen.canvas.createImageData(config.width, config.height);
+	
+	console.log("init bottom");
+	
+	for (var y = 0; y < screenHeight; y++) {
+		for (var x = 0; x < screenWidth; x++) {
+			if (bottom[x]) {
+				bottom[x][y] = 0;
+			}
+			else {
+				bottom[x] = {};
+				bottom[x][y] = 0;
+			}
+		}
+	}
 	
 	console.log("animation starting");
 	
@@ -162,41 +177,54 @@ function animateFlakes() {
 	for (var f = 0; f < flakes.length; f++) {
 		var flake = flakes[f];
 		
-		flake.y += flake.weight;
-		flake.x += flake.motion;
+		var newX = flake.x + flake.motion;
+		var newY = flake.y + flake.weight;
 		
-		if (flake.y >= screenHeight || hitBottom(Math.floor(flake.x), Math.floor(flake.y))) {
-			var bottomLevel = bottom[Math.floor(flake.x)];
-			
-			if (bottomLevel) {
-				bottom[Math.floor(flake.x)] += 1;
-			} else {
-				bottom[Math.floor(flake.x)] = 1;
-			}
+		if (newX >= (config.width / 2)) {
+			flakes.remove(f);
+			delete flake;
+			break;
+		}
+		else if (newX <= 0) {
+			flakes.remove(f);
+			delete flake;
+			break;
+		}
+		else if (newY >= screenHeight) {
+			bottom[Math.floor(newX)][screenHeight - 1] = 1;
 			
 			flakes.remove(f);
 			delete flake;
 		}
-		else if (flake.x >= (config.width / 2)) {
-			flakes.remove(f);
-			delete flake;
-		}
-		else if (flake.x <= 0) {
+		else if (hitSnow(Math.floor(flake.x), Math.floor(flake.y), Math.floor(newY), Math.floor(newY))) {
+			// var bottomLevel = bottom[Math.floor(flake.x)];
+			// 
+			// if (bottomLevel) {
+			// 	bottom[Math.floor(flake.x)][flake.y] = 1;
+			// } else {
+			// 	bottom[Math.floor(flake.x)] = {};
+			// 	bottom[Math.floor(flake.x)][flake.y] = 1;
+			// }
+			
 			flakes.remove(f);
 			delete flake;
 		}
 		else {
-			setPixel(screen.image, Math.floor(flake.x), Math.floor(flake.y), 256, 256, 256, 256);
+			setPixel(screen.image, Math.floor(newX), Math.floor(newY), 256, 256, 256, 256);
 		}
+		
+		flake.x = newX;
+		flake.y = newY;
 	}
 }
 
 
-function hitBottom(x, y) {
-	if (bottom[x]) {
-		if (y >= Math.floor((screenHeight - 1) - bottom[x])) {
-			return true;
-		}
+// Return true and place the flake if there's a hit. Otherwise return false
+function hitSnow(x, y, newX, newY) {
+	if ((bottom[x][newY] == 1) || (bottom[newX][y] == 1) || bottom[newX][newY] == 1) {
+		bottom[x][y] = 1;
+		
+		return true;
 	}
 	
 	return false;
@@ -204,12 +232,11 @@ function hitBottom(x, y) {
 
 
 function drawBottom() {
-	$.each(bottom, function(row, height) {
-		var fromBottom = Math.floor(screenHeight - height);
-		
-		for (var up = 0; up < (screenHeight - fromBottom); up++) {
-			setPixel(screen.image, row, ((screenHeight - 1) - up), 256, 256, 256, 256);
+	for (var y = 0; y < screenHeight; y++) {
+		for (var x = 0; x < screenWidth; x++) {
+			if (bottom[x][y] == 1) {
+				setPixel(screen.image, x, y, 256, 256, 256, 256);
+			}
 		}
-	});
+	}
 }
-

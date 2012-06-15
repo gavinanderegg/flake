@@ -48,7 +48,6 @@ $(document).ready(function() {
 	
 	var c = document.getElementById('screen');
 	screen.canvas = c.getContext('2d');
-	// screen.canvas.globalCompositeOperation = 'lighter';
 	screen.image = screen.canvas.createImageData(config.width, config.height);
 	
 	console.log("init bottom");
@@ -83,8 +82,6 @@ function render() {
 	for (var i = 0; i < screen.image.data.length; i++) {
 		screen.image.data[i] = 0;
 	}
-	
-	// setPixel(screen.image, randBetween(0, Math.floor(config.width / 2)), randBetween(0, Math.floor(config.height / 2)), 256, 256, 256, 256);
 	
 	animateFlakes();
 	drawBottom();
@@ -183,12 +180,10 @@ function animateFlakes() {
 		if (newX >= (config.width / 2)) {
 			flakes.remove(f);
 			delete flake;
-			break;
 		}
 		else if (newX <= 0) {
 			flakes.remove(f);
 			delete flake;
-			break;
 		}
 		else if (newY >= screenHeight) {
 			bottom[Math.floor(newX)][screenHeight - 1] = 1;
@@ -196,16 +191,7 @@ function animateFlakes() {
 			flakes.remove(f);
 			delete flake;
 		}
-		else if (hitSnow(Math.floor(flake.x), Math.floor(flake.y), Math.floor(newY), Math.floor(newY))) {
-			// var bottomLevel = bottom[Math.floor(flake.x)];
-			// 
-			// if (bottomLevel) {
-			// 	bottom[Math.floor(flake.x)][flake.y] = 1;
-			// } else {
-			// 	bottom[Math.floor(flake.x)] = {};
-			// 	bottom[Math.floor(flake.x)][flake.y] = 1;
-			// }
-			
+		else if (hitSnow(Math.floor(flake.x), Math.floor(flake.y), Math.floor(newX), Math.floor(newY))) {
 			flakes.remove(f);
 			delete flake;
 		}
@@ -219,7 +205,6 @@ function animateFlakes() {
 }
 
 
-// Return true and place the flake if there's a hit. Otherwise return false
 function hitSnow(x, y, newX, newY) {
 	if ((bottom[x][newY] == 1) || (bottom[newX][y] == 1) || bottom[newX][newY] == 1) {
 		bottom[x][y] = 1;
@@ -229,6 +214,9 @@ function hitSnow(x, y, newX, newY) {
 	
 	return false;
 }
+
+
+// TODO: Random compression on a column every n frames/snowHits.
 
 
 function drawBottom() {
